@@ -39,7 +39,7 @@ After cloning, `node_modules/` and `assets/css/app.css` are not included. You'll
 ### 1. Install dependencies
 
 ```bash
-npm install
+npm install -D tailwindcss postcss postcss-import autoprefixer @tailwindcss/forms @tailwindcss/container-queries
 ```
 
 ### 2. Build the CSS
