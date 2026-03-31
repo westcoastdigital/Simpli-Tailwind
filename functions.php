@@ -64,7 +64,6 @@ function sw_theme_assets() {
 
 }
 add_action('wp_enqueue_scripts', 'sw_theme_assets');
-add_action('wp_enqueue_scripts', 'sw_theme_assets');
 
 /*
 * Add body class
