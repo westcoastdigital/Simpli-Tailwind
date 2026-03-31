@@ -1,0 +1,7 @@
+@import "wordpress-core.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
