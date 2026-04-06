@@ -66,10 +66,15 @@ function sw_theme_assets() {
 add_action('wp_enqueue_scripts', 'sw_theme_assets');
 
 /*
-* Add body class
-*/
-function sw_theme_body_class($classes) {
-    $classes[] = '';
+ * Add body class from template-level global
+ * Example Usage: <?php $GLOBALS['sw_body_class'] = 'bg-surface text-on-surface selection:bg-primary selection:text-white'; ?>
+ */
+function sw_theme_body_class($classes)
+{
+    if (!empty($GLOBALS['sw_body_class'])) {
+        $extra = array_filter(array_map('sanitize_html_class', explode(' ', $GLOBALS['sw_body_class'])));
+        $classes = array_merge($classes, $extra);
+    }
 
     return $classes;
 }
