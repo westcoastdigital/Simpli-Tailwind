@@ -1,0 +1,777 @@
+<!-- Thid
+Thhis helper allows you to merge tailwind config files.
+1: open in browser
+2: copy contents of tailwind.config.js
+3: paste into the Original Config text box
+4: copy new confing js
+5: paste into the Config To Merge text box
+6: Choose to keep the OG or new config for conflicts (recommend keeping original wins as default)
+7: Click Merge Configs
+8: Click copy button after merge
+9: paste into taiwind.config.js
+10: Run ```npm run build``` or ``npm run watch```
+ -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailwind Config Merger</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0d0f12;
+            --surface: #13161b;
+            --surface2: #1a1e25;
+            --border: #252a34;
+            --border-bright: #3a4150;
+            --accent: #4ade80;
+            --accent-dim: rgba(74, 222, 128, 0.12);
+            --accent-glow: rgba(74, 222, 128, 0.25);
+            --warn: #fb923c;
+            --warn-dim: rgba(251, 146, 60, 0.12);
+            --blue: #60a5fa;
+            --blue-dim: rgba(96, 165, 250, 0.12);
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dim: #94a3b8;
+            --mono: 'JetBrains Mono', monospace;
+            --display: 'Syne', sans-serif;
+            --radius: 8px;
+        }
+
+        body {
+            font-family: var(--mono);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            padding: 28px 40px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--surface);
+        }
+
+        .logo-mark {
+            width: 38px;
+            height: 38px;
+            background: var(--accent);
+            border-radius: 6px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+        .logo-mark svg {
+            display: block;
+        }
+
+        .header-title {
+            font-family: var(--display);
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .header-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .header-badge {
+            margin-left: auto;
+            font-size: 11px;
+            color: var(--accent);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+        }
+
+        /* Main layout */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            padding: 32px 40px;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .inputs-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface2);
+            flex-shrink: 0;
+        }
+
+        .panel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot-original {
+            background: var(--blue);
+            box-shadow: 0 0 6px var(--blue);
+        }
+
+        .dot-new {
+            background: var(--warn);
+            box-shadow: 0 0 6px var(--warn);
+        }
+
+        .dot-out {
+            background: var(--accent);
+            box-shadow: 0 0 6px var(--accent);
+        }
+
+        .panel-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-dim);
+        }
+
+        .panel-meta {
+            margin-left: auto;
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        textarea {
+            flex: 1;
+            width: 100%;
+            min-height: 320px;
+            background: var(--bg);
+            color: var(--text);
+            border: none;
+            outline: none;
+            padding: 16px;
+            font-family: var(--mono);
+            font-size: 12px;
+            line-height: 1.7;
+            resize: vertical;
+            caret-color: var(--accent);
+            tab-size: 2;
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        textarea:focus {
+            background: #0a0c0f;
+            outline: 1px solid var(--border-bright);
+            outline-offset: -1px;
+        }
+
+        /* Action bar */
+        .action-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .btn-merge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent);
+            color: #0a0c0f;
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 24px;
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            transition: all 0.15s;
+            text-transform: uppercase;
+        }
+
+        .btn-merge:hover {
+            background: #86efac;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn-merge:active {
+            transform: translateY(0);
+        }
+
+        .btn-merge svg {
+            flex-shrink: 0;
+        }
+
+        .btn-secondary {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border-bright);
+            border-radius: var(--radius);
+            padding: 11px 20px;
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            transition: all 0.15s;
+            text-transform: uppercase;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-muted);
+            color: var(--text);
+            background: var(--surface2);
+        }
+
+        .merge-strategy {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .strategy-select {
+            background: var(--surface2);
+            border: 1px solid var(--border-bright);
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 11px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .strategy-select:focus {
+            border-color: var(--accent);
+        }
+
+        /* Output */
+        .output-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .output-area {
+            position: relative;
+            flex: 1;
+        }
+
+        #output {
+            min-height: 280px;
+            resize: vertical;
+            color: #a5f3a5;
+        }
+
+        /* Diff view */
+        .diff-summary {
+            display: flex;
+            gap: 16px;
+            padding: 10px 16px;
+            background: var(--surface2);
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .diff-pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-muted);
+        }
+
+        .pill-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .pill-added {
+            background: var(--accent);
+        }
+
+        .pill-skipped {
+            background: var(--warn);
+        }
+
+        .pill-merged {
+            background: var(--blue);
+        }
+
+        /* Copy toast */
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--surface2);
+            border: 1px solid var(--border-bright);
+            color: var(--text-dim);
+            font-family: var(--mono);
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+            z-index: 10;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .copy-btn.copied {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        /* Status bar */
+        .status-bar {
+            margin-top: 4px;
+            padding: 8px 16px;
+            font-size: 11px;
+            color: var(--text-muted);
+            border-radius: var(--radius);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-ok {
+            color: var(--accent);
+        }
+
+        .status-warn {
+            color: var(--warn);
+        }
+
+        .status-err {
+            color: #f87171;
+        }
+
+        .status-icon {
+            font-size: 13px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-bright);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo-mark">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M3 6h14M3 10h14M7 14h6" stroke="#0d0f12" stroke-width="2.2" stroke-linecap="round" />
+            </svg>
+        </div>
+        <div>
+            <div class="header-title">Tailwind Config Merger</div>
+            <div class="header-sub">Deep merge · Deduplicate · Output ready</div>
+        </div>
+        <div class="header-badge">v1.0</div>
+    </header>
+
+    <main>
+        <div class="inputs-row">
+            <!-- Original -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-dot dot-original"></span>
+                    <span class="panel-label">Original Config</span>
+                    <span class="panel-meta">module.exports = { … }</span>
+                </div>
+                <textarea id="original" spellcheck="false" placeholder="Paste your original tailwind.config.js here…
+
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [...],
+  theme: { extend: { ... } },
+  plugins: [...],
+};"></textarea>
+            </div>
+
+            <!-- New -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-dot dot-new"></span>
+                    <span class="panel-label">Config to Merge</span>
+                    <span class="panel-meta">tailwind.config = { … }</span>
+                </div>
+                <textarea id="incoming" spellcheck="false" placeholder="Paste the config to merge in here…
+
+tailwind.config = {
+  theme: {
+    extend: { ... }
+  },
+}
+
+— or —
+
+module.exports = {
+  theme: { extend: { ... } },
+};"></textarea>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn-merge" onclick="mergeConfigs()">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                Merge Configs
+            </button>
+            <button class="btn-secondary" onclick="clearAll()">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <path d="M1 1l11 11M12 1L1 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                Clear
+            </button>
+            <div class="merge-strategy">
+                <span>Conflict strategy:</span>
+                <select class="strategy-select" id="strategy">
+                    <option value="new-wins">New wins</option>
+                    <option value="original-wins" selected>Original wins</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="panel output-panel">
+            <div class="panel-header">
+                <span class="panel-dot dot-out"></span>
+                <span class="panel-label">Merged Output</span>
+                <span class="panel-meta" id="output-meta">—</span>
+            </div>
+            <div class="output-area">
+                <textarea id="output" spellcheck="false" placeholder="Merged config will appear here…"></textarea>
+                <button class="copy-btn" id="copy-btn" onclick="copyOutput()">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <rect x="4" y="4" width="7" height="7" rx="1.2" stroke="currentColor" stroke-width="1.5" />
+                        <path d="M8 4V2.5A1.5 1.5 0 006.5 1h-5A1.5 1.5 0 000 2.5v5A1.5 1.5 0 001.5 9H3"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                    </svg>
+                    Copy
+                </button>
+            </div>
+            <div class="diff-summary" id="diff-summary" style="display:none">
+                <div class="diff-pill"><span class="pill-dot pill-added"></span><span id="stat-added">0 added</span>
+                </div>
+                <div class="diff-pill"><span class="pill-dot pill-skipped"></span><span id="stat-conflict">0
+                        conflicts</span></div>
+                <div class="diff-pill"><span class="pill-dot pill-merged"></span><span id="stat-merged">0 keys
+                        merged</span></div>
+            </div>
+        </div>
+
+        <div class="status-bar" id="status">
+            <span class="status-icon">◎</span> Paste both configs above, then click <strong>Merge Configs</strong>.
+        </div>
+    </main>
+
+    <script>
+        // ─── Parser ─────────────────────────────────────────────────────────────────
+
+        function extractConfigObject(src) {
+            src = src.trim();
+
+            // Strip TS jsdoc comment
+            src = src.replace(/\/\*\*[\s\S]*?\*\//g, '').trim();
+
+            // Normalise: tailwind.config = {...} or module.exports = {...}
+            let match = src.match(/(?:tailwind\.config|module\.exports)\s*=\s*([\s\S]+)$/);
+            if (match) src = match[1].trim();
+
+            // Remove trailing semicolon
+            src = src.replace(/;$/, '').trim();
+
+            // Convert JS object to JSON-parseable form using Function evaluation
+            // We use a sandboxed Function approach to handle require(), etc.
+            try {
+                const cleaned = preprocessJS(src);
+                // eslint-disable-next-line no-new-func
+                const fn = new Function(`
+      const require = (m) => ({ __require: m });
+      return (${cleaned});
+    `);
+                return fn();
+            } catch (e) {
+                throw new Error('Could not parse config: ' + e.message);
+            }
+        }
+
+        function preprocessJS(src) {
+            // Remove require(...) calls with placeholder objects so JSON is parseable
+            // We'll re-inject them afterward as strings
+            return src;
+        }
+
+        // ─── Deep merge ─────────────────────────────────────────────────────────────
+
+        const stats = { added: 0, conflicts: 0, merged: 0 };
+
+        function deepMerge(base, incoming, strategy, path = '') {
+            if (base === null || base === undefined) return incoming;
+            if (incoming === null || incoming === undefined) return base;
+
+            // Both are plain objects → recurse
+            if (isPlainObject(base) && isPlainObject(incoming)) {
+                const result = { ...base };
+                for (const key of Object.keys(incoming)) {
+                    if (!(key in result)) {
+                        result[key] = incoming[key];
+                        stats.added++;
+                    } else if (isPlainObject(result[key]) && isPlainObject(incoming[key])) {
+                        result[key] = deepMerge(result[key], incoming[key], strategy, path + '.' + key);
+                        stats.merged++;
+                    } else if (Array.isArray(result[key]) && Array.isArray(incoming[key])) {
+                        result[key] = mergeArrays(result[key], incoming[key]);
+                        stats.merged++;
+                    } else {
+                        // Scalar conflict
+                        if (JSON.stringify(result[key]) !== JSON.stringify(incoming[key])) {
+                            stats.conflicts++;
+                        }
+                        result[key] = strategy === 'new-wins' ? incoming[key] : result[key];
+                    }
+                }
+                return result;
+            }
+
+            // Both arrays
+            if (Array.isArray(base) && Array.isArray(incoming)) {
+                return mergeArrays(base, incoming);
+            }
+
+            // Scalar
+            if (JSON.stringify(base) !== JSON.stringify(incoming)) stats.conflicts++;
+            return strategy === 'new-wins' ? incoming : base;
+        }
+
+        function mergeArrays(a, b) {
+            const seen = new Set(a.map(normaliseItem));
+            const result = [...a];
+            for (const item of b) {
+                if (!seen.has(normaliseItem(item))) {
+                    result.push(item);
+                    seen.add(normaliseItem(item));
+                    stats.added++;
+                }
+            }
+            return result;
+        }
+
+        function normaliseItem(x) {
+            if (typeof x === 'object') return JSON.stringify(x);
+            return String(x);
+        }
+
+        function isPlainObject(v) {
+            return v !== null && typeof v === 'object' && !Array.isArray(v) && !(v instanceof RegExp);
+        }
+
+        // ─── Serialiser ─────────────────────────────────────────────────────────────
+
+        function serialize(obj, indent = 0) {
+            const pad = '  '.repeat(indent);
+            const inner = '  '.repeat(indent + 1);
+
+            if (obj === null) return 'null';
+            if (typeof obj === 'boolean') return String(obj);
+            if (typeof obj === 'number') return String(obj);
+            if (typeof obj === 'string') return JSON.stringify(obj);
+
+            // require() placeholder
+            if (isPlainObject(obj) && obj.__require) {
+                return `require(${JSON.stringify(obj.__require)})`;
+            }
+
+            if (Array.isArray(obj)) {
+                if (obj.length === 0) return '[]';
+                const items = obj.map(v => inner + serialize(v, indent + 1));
+                return `[\n${items.join(',\n')},\n${pad}]`;
+            }
+
+            if (isPlainObject(obj)) {
+                const keys = Object.keys(obj);
+                if (keys.length === 0) return '{}';
+                const lines = keys.map(k => {
+                    const keyStr = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(k) ? k : JSON.stringify(k);
+                    return `${inner}${keyStr}: ${serialize(obj[k], indent + 1)}`;
+                });
+                return `{\n${lines.join(',\n')},\n${pad}}`;
+            }
+
+            return JSON.stringify(obj);
+        }
+
+        function buildOutput(merged) {
+            return `/** @type {import('tailwindcss').Config} */\nmodule.exports = ${serialize(merged, 0)};\n`;
+        }
+
+        // ─── Main action ────────────────────────────────────────────────────────────
+
+        function mergeConfigs() {
+            const origSrc = document.getElementById('original').value.trim();
+            const incomSrc = document.getElementById('incoming').value.trim();
+            const strategy = document.getElementById('strategy').value;
+
+            if (!origSrc || !incomSrc) {
+                setStatus('warn', 'Paste both configs before merging.');
+                return;
+            }
+
+            try {
+                const origObj = extractConfigObject(origSrc);
+                const incomObj = extractConfigObject(incomSrc);
+
+                stats.added = 0; stats.conflicts = 0; stats.merged = 0;
+
+                const merged = deepMerge(origObj, incomObj, strategy);
+                const output = buildOutput(merged);
+
+                document.getElementById('output').value = output;
+
+                // Update stats
+                document.getElementById('stat-added').textContent = `${stats.added} new key${stats.added !== 1 ? 's' : ''} added`;
+                document.getElementById('stat-conflict').textContent = `${stats.conflicts} conflict${stats.conflicts !== 1 ? 's' : ''} (${strategy === 'new-wins' ? 'new won' : 'original kept'})`;
+                document.getElementById('stat-merged').textContent = `${stats.merged} section${stats.merged !== 1 ? 's' : ''} merged`;
+                document.getElementById('diff-summary').style.display = 'flex';
+                document.getElementById('output-meta').textContent = `${countKeys(merged)} top-level keys`;
+
+                const msg = stats.conflicts > 0
+                    ? `Merge complete — ${stats.conflicts} conflict${stats.conflicts !== 1 ? 's' : ''} resolved (${strategy === 'new-wins' ? 'new wins' : 'original wins'}).`
+                    : 'Merge complete — no conflicts detected.';
+                setStatus('ok', msg);
+
+            } catch (e) {
+                setStatus('err', e.message);
+                console.error(e);
+            }
+        }
+
+        function countKeys(obj) {
+            return isPlainObject(obj) ? Object.keys(obj).length : 0;
+        }
+
+        function setStatus(type, msg) {
+            const el = document.getElementById('status');
+            const icons = { ok: '✓', warn: '⚠', err: '✕' };
+            el.innerHTML = `<span class="status-icon status-${type}">${icons[type]}</span> ${msg}`;
+        }
+
+        function copyOutput() {
+            const val = document.getElementById('output').value;
+            if (!val) return;
+            navigator.clipboard.writeText(val).then(() => {
+                const btn = document.getElementById('copy-btn');
+                btn.classList.add('copied');
+                btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6l4 4 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied!`;
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.2" stroke="currentColor" stroke-width="1.5"/><path d="M8 4V2.5A1.5 1.5 0 006.5 1h-5A1.5 1.5 0 000 2.5v5A1.5 1.5 0 001.5 9H3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Copy`;
+                }, 2000);
+            });
+        }
+
+        function clearAll() {
+            document.getElementById('original').value = '';
+            document.getElementById('incoming').value = '';
+            document.getElementById('output').value = '';
+            document.getElementById('diff-summary').style.display = 'none';
+            document.getElementById('output-meta').textContent = '—';
+            setStatus('ok', 'Cleared. Paste new configs to begin.');
+        }
+
+        // Keyboard shortcut: Cmd/Ctrl + Enter to merge
+        document.addEventListener('keydown', e => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') mergeConfigs();
+        });
+    </script>
+</body>
+
+</html>
