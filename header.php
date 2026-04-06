@@ -14,7 +14,7 @@
   <header class="bg-white shadow-sm sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
       <div class="text-xl font-bold text-brand-600">
-        Simpli Tailwind
+        <?= get_bloginfo('name') ?>
       </div>
 
       <?php
