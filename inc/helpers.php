@@ -66,45 +66,84 @@ if (!function_exists('simpli_numbered_pagination')) {
             $links[] = $paged + 1;
         }
 
-        $woo_class = class_exists('WooCommerce') ? 'woocommerce-pagination' : 'woocommerce-pagination';
-        $woo_list_class = class_exists('WooCommerce') ? 'page-numbers' : 'page-numbers';
-        echo '<nav class="' .  $woo_class . '"><ul class="'  . $woo_list_class  . '">' . "\n";
+        echo '<nav class="flex justify-center my-8"><ul class="flex items-center gap-1">' . "\n";
+
+        $base_item_class   = 'flex items-center justify-center w-10 h-10 rounded transition-colors duration-200';
+        $page_link_class   = $base_item_class . ' text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm';
+        $active_link_class = $base_item_class . ' bg-primary text-white font-semibold text-sm pointer-events-none';
+        $arrow_link_class  = $base_item_class . ' text-gray-500 hover:bg-gray-100 hover:text-gray-900';
+        $ellipsis_class    = 'flex items-center justify-center w-10 h-10 text-gray-400 text-sm select-none';
+
+        $icon_prev = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>';
+        $icon_next = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>';
 
         /** Previous Post Link */
         if (get_previous_posts_link())
-            printf('<li>%s</li>' . "\n", get_previous_posts_link('←'));
+            printf(
+                '<li><a href="%s" class="' . $arrow_link_class . '" aria-label="Previous page">%s</a></li>' . "\n",
+                get_previous_posts_page_url(),
+                $icon_prev
+            );
 
         /** Link to first page, plus ellipses if necessary */
         if (!in_array(1, $links)) {
-            $class = 1 == $paged ? ' class="active"' : '';
-
-            printf('<li%s><a href="%s" class="page-numbers">%s</a></li>' . "\n", $class, esc_url(get_pagenum_link(1)), '1');
+            $link_class = 1 == $paged ? $active_link_class : $page_link_class;
+            printf('<li><a href="%s" class="' . $link_class . '">1</a></li>' . "\n", esc_url(get_pagenum_link(1)));
 
             if (!in_array(2, $links))
-                echo '<li>…</li>';
+                echo '<li><span class="' . $ellipsis_class . '">…</span></li>' . "\n";
         }
 
         /** Link to current page, plus 2 pages in either direction if necessary */
         sort($links);
         foreach ((array) $links as $link) {
-            $class = $paged == $link ? ' class="active"' : '';
-            printf('<li%s><a href="%s" class="page-numbers">%s</a></li>' . "\n", $class, esc_url(get_pagenum_link($link)), $link);
+            $link_class = $paged == $link ? $active_link_class : $page_link_class;
+            printf('<li><a href="%s" class="' . $link_class . '">%s</a></li>' . "\n", esc_url(get_pagenum_link($link)), $link);
         }
 
         /** Link to last page, plus ellipses if necessary */
         if (!in_array($max, $links)) {
             if (!in_array($max - 1, $links))
-                echo '<li>…</li>' . "\n";
+                echo '<li><span class="' . $ellipsis_class . '">…</span></li>' . "\n";
 
-            $class = $paged == $max ? ' class="active"' : '';
-            printf('<li%s><a href="%s" class="page-numbers">%s</a></li>' . "\n", $class, esc_url(get_pagenum_link($max)), $max);
+            $link_class = $paged == $max ? $active_link_class : $page_link_class;
+            printf('<li><a href="%s" class="' . $link_class . '">%s</a></li>' . "\n", esc_url(get_pagenum_link($max)), $max);
         }
 
         /** Next Post Link */
         if (get_next_posts_link())
-            printf('<li>%s</li>' . "\n", get_next_posts_link('→'));
+            printf(
+                '<li><a href="%s" class="' . $arrow_link_class . '" aria-label="Next page">%s</a></li>' . "\n",
+                get_next_posts_page_url(),
+                $icon_next
+            );
 
         echo '</ul></nav>' . "\n";
+    }
+}
+
+/**
+ * Helper: get the URL for the previous posts page (used in simpli_numbered_pagination)
+ */
+if (!function_exists('get_previous_posts_page_url')) {
+    function get_previous_posts_page_url()
+    {
+        global $wp_query;
+        $paged = get_query_var('paged') ? absint(get_query_var('paged')) : 1;
+        return $paged > 1 ? esc_url(get_pagenum_link($paged - 1)) : '';
+    }
+}
+
+/**
+ * Helper: get the URL for the next posts page (used in simpli_numbered_pagination)
+ */
+if (!function_exists('get_next_posts_page_url')) {
+    function get_next_posts_page_url()
+    {
+        global $wp_query;
+        $paged = get_query_var('paged') ? absint(get_query_var('paged')) : 1;
+        $max   = intval($wp_query->max_num_pages);
+        return $paged < $max ? esc_url(get_pagenum_link($paged + 1)) : '';
     }
 }
 
