@@ -34,7 +34,7 @@
 
       <!-- Mobile hamburger — sits fixed so it stays on top of the fullscreen menu -->
       <button id="menuBtn"
-        class="lg:hidden fixed top-0 right-0 z-[60] flex items-center justify-center w-24 h-24 text-stone-600 dark:text-stone-300 transition-colors"
+        class="lg:hidden fixed top-0 right-0 z-[60] flex items-center justify-center w-20 h-20 text-stone-600 dark:text-stone-300 transition-colors"
         aria-label="Toggle menu"
         aria-expanded="false"
         aria-controls="mobileMenu">
