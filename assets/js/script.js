@@ -1,9 +1,13 @@
-  const menuBtn = document.getElementById("menuBtn");
-  const mobileMenu = document.getElementById("mobileMenu");
+const menuBtn = document.getElementById("menuBtn");
+const mobileMenu = document.getElementById("mobileMenu");
 
-  menuBtn.addEventListener("click", () => {
-    mobileMenu.classList.toggle("hidden");
-  });
+menuBtn.addEventListener("click", () => {
+  const opening = mobileMenu.classList.toggle("hidden") === false;
+
+  menuIconOpen.classList.toggle("hidden", opening);
+  menuIconClose.classList.toggle("hidden", !opening);
+  menuBtn.setAttribute("aria-expanded", String(opening));
+});
 
 // function adjustTopNav() {
 //   const adminBar = document.querySelector("#wpadminbar");
